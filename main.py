@@ -33,8 +33,6 @@ def data_exploration():
     st.subheader("Overview of Data")
     st.dataframe(train.head())
 
-    # Data Preparation
-    st.subheader("Data Preparation")
 
     # Fill missing values with the mode
     train.fillna(train.mode().iloc[0], inplace=True)
@@ -55,15 +53,31 @@ def data_exploration():
         district_data = train[train['DISTRICT_NAME'] == district]
         st.dataframe(district_data.head())
 
-    st.write("Top Disease in Each District")
+    st.markdown("""
+        <h2>Top Disease in Each District</h2>
+        """, unsafe_allow_html=True)
     for i in train['DISTRICT_NAME'].unique():
+        disease_count = train[train['DISTRICT_NAME'] == i]['SURGERY'].value_counts().head(1)
+        most_common_disease = disease_count.index[0]
+        count_str = str(disease_count.values[0])  # Convert count to a string
         st.write(
-            f"District: {i}\nDisease and Count: {train[train['DISTRICT_NAME'] == i]['SURGERY'].value_counts().head(1)}")
+            f"District: {i}\nDisease: {most_common_disease}")
+        st.write(f"Count - {count_str}")
+        st.markdown("""
+        <hr/>
+        """, unsafe_allow_html=True)
 
-    st.write("Average Claim Amount by District")
+    
+    st.markdown("""
+        <h2>Average Claim Amount by District</h2>
+        """, unsafe_allow_html=True)
     for i in train['DISTRICT_NAME'].unique():
         st.write(
-            f"District: {i}\nAverage Claim Amount: ₹{train[train['DISTRICT_NAME'] == i]['CLAIM_AMOUNT'].mean():.2f}")
+            f"District: {i}")
+        st.write(f"Average Claim Amount: ₹{train[train['DISTRICT_NAME'] == i]['CLAIM_AMOUNT'].mean():.2f}")
+        st.markdown("""
+        <hr/>
+        """, unsafe_allow_html=True)
 
     # Data analysis by user input
     st.write("Data Analysis by User Input")
@@ -98,8 +112,14 @@ def data_preparation():
     train_copy['AGE'] = train_copy['AGE'].round(-1)
     st.write("Age Groups and Most Common Surgery")
     for i in sorted(train_copy['AGE'].unique()):
-        st.write(
-            f"Age Group: {i}\nMost Common Surgery and Count: {train[train_copy['AGE'] == i]['CATEGORY_NAME'].value_counts().head(1)}")
+        st.write(f"Age Group: {i}")
+        surgery_count = train[train_copy['AGE'] == i]['CATEGORY_NAME'].value_counts().head(1)
+        most_common_surgery = surgery_count.index[0]
+        count_str = str(surgery_count.values[0])  # Convert count to a string
+        st.write(f"Most Common Surgery and Count: {most_common_surgery} - {count_str}")
+        st.markdown("""
+        <hr/>
+        """, unsafe_allow_html=True)
 
     # Create a Seaborn countplot and save it as an image
     plt.figure(figsize=(10, 6))
